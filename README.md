@@ -2,6 +2,10 @@
 
 [**Open the live interactive tutorial**](https://az9713.github.io/open-model-evaluation-baseten/)
 
+[![Preview of the dark-mode coding agent evaluation tutorial](./assets/tutorial-preview.jpg)](https://az9713.github.io/open-model-evaluation-baseten/)
+
+*Click the preview to open the live tutorial and use its interactive examples.*
+
 A dark-mode visual tutorial based on Baseten’s webinar on evaluating open models for coding agents. It explains how to define representative tasks, compare complete agent systems fairly, verify fixes and regressions, and measure cost and time per accepted task.
 
 The tutorial includes an executive summary, interactive cost and latency examples, workflow diagrams, formatted equations, and three short understanding checks. The HTML runs locally without a build step or external runtime dependencies.
