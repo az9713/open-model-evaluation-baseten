@@ -1,0 +1,237 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="description" content="A practical tutorial on evaluating open coding models, with executive summary, interactive examples, and diagrams."><title>How to Evaluate Open Models for Your Coding Agents</title><style>
+:root{color-scheme:dark;--background:#0b111b;--foreground:#e8eef6;--card:#142133;--card-foreground:#e8eef6;--muted:#26354a;--muted-foreground:#b1bfd0;--border:#33445c;--primary:#cde5fa;--primary-foreground:#102033;--accent:#90c9f7;--viz-series-1:#86d6b2;--viz-series-2:#88bdf7;--viz-series-3:#e9bb75;--viz-series-4:#bda8ee}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:25px}body{margin:0;background:var(--background);color:var(--foreground);font:17px/1.7 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}header,main,footer{max-width:1000px;margin:0 auto;padding:0 30px}header{padding-top:52px;padding-bottom:24px;border-top:4px solid var(--viz-series-1)}header h1{font-size:clamp(32px,5vw,50px);line-height:1.12;letter-spacing:-.035em;margin:12px 0 20px}.eyebrow{color:var(--viz-series-1);font-size:12px;letter-spacing:.12em;text-transform:uppercase}.meta{color:var(--muted-foreground);font-size:14px}a{color:var(--accent);text-underline-offset:3px}a:hover{color:var(--foreground)}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px}nav{display:flex;gap:12px 24px;flex-wrap:wrap;margin-top:22px}nav a{font-size:14px}section{padding:30px 0;border-top:1px solid var(--border)}section:first-child{padding-top:25px}h2{font-size:29px;line-height:1.3;letter-spacing:-.02em;margin:0 0 24px}h3{font-size:22px;line-height:1.4;margin:27px 0 18px}p{margin:0 0 20px}strong{font-weight:650}li{margin:9px 0}code{font: .9em ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--card);padding:2px 5px;border-radius:4px}pre{padding:20px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}pre code{background:transparent;padding:0;font-size:14px}.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--border)}th{color:var(--viz-series-1);font-weight:650}td{min-width:100px}table th:first-child,table td:first-child{padding-left:0}.executive p{padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:18px}.executive p:last-child{border-bottom:0}.viz-export{margin:28px 0;padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}.viz-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.form-label{display:block;flex:1;min-width:180px}.form-range{width:100%;display:block;accent-color:var(--viz-series-1);margin:12px 0 20px}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}.card{padding:20px;background:var(--card);border:1px solid var(--border);border-radius:8px}.viz-stat-value{font-size:32px;font-weight:650;line-height:1.3;margin:5px 0}.viz-stat{font-size:15px}.viz-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.tabular-nums{font-variant-numeric:tabular-nums}.text-small{font-size:13px}.text-muted{color:var(--muted-foreground)}.btn{font:inherit;font-size:15px;padding:9px 15px;border-radius:6px;border:1px solid var(--border);color:var(--foreground);background:var(--card);cursor:pointer}.btn-primary{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}.btn:disabled{opacity:.45;cursor:default}.equation{overflow-x:auto;padding:22px 10px;text-align:center;margin:20px 0;background:var(--card);border-radius:8px}.equation math{font-family:'Cambria Math',serif;font-size:1.15em}details{margin:12px 0 24px}summary{cursor:pointer;font-size:14px;color:var(--muted-foreground)}.diagram-scroll{overflow-x:auto;margin:26px 0}.diagram-scroll svg{display:block;max-width:100%;height:auto;margin:auto;min-width:470px}.diagram-scroll .node{fill:var(--card);stroke:var(--border);stroke-width:1.5}.diagram-scroll text{fill:var(--foreground);font:16px system-ui,sans-serif}.diagram-scroll .edge{fill:none;stroke:var(--muted-foreground);stroke-width:1.5}.diagram-scroll .edge-label{font-size:14px;fill:var(--viz-series-1)}footer{padding-top:26px;padding-bottom:45px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:600px){body{font-size:16px}header,main,footer{padding-left:19px;padding-right:19px}header{padding-top:32px}h2{font-size:25px}.viz-grid{grid-template-columns:1fr}.viz-export{padding:18px 0}.card{padding:17px}th,td{padding:10px 8px}nav{gap:12px 17px}.diagram-scroll svg{min-width:430px}.equation math{font-size:1em}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}nav,.viz-controls{display:none}header,main,footer{max-width:none}.diagram-scroll svg{min-width:0}section{break-inside:auto}table,.equation,.diagram-scroll{break-inside:avoid}a{color:var(--accent)}}
+</style></head><body><header id="top"><div class="eyebrow">Coding agent evaluation · visual tutorial</div><h1>How to Evaluate Open Models for Your Coding Agents</h1><p class="meta">Dark mode edition · executive summary, diagrams, equations, and interactive examples</p><nav aria-label="Tutorial navigation"><a href="#executive-summary">Executive summary</a><a href="#compare-useful-outcomes-rather-than-token-prices">Cost example</a><a href="#see-why-fast-tokens-can-still-mean-a-slow-agent">Latency animation</a><a href="#sources-and-coverage">Sources</a></nav></header><main><section id="executive-summary" class="executive"><h2>Executive summary</h2><p><strong>How to define the evaluation.</strong> Choose a recurring workload and define success, tools, environment, time limits, and retry rules before testing.</p><p><strong>How to build a realistic test set.</strong> Use representative historical issues and merged PRs. The webinar suggests a pilot of 30–50 examples, recreated at their starting commits with solutions hidden. Verify the original fixes pass.</p><p><strong>How to compare models fairly.</strong> Use your current setup as the baseline and compare one or two relevant open models with the same tasks, tools, harness, and budgets. Record the served model and test tuning separately.</p><p><strong>How to verify success.</strong> Require target and regression checks. Review patches and traces, use judges for rubric-based assessments where useful, and count tool failures, timeouts, and exhausted budgets as failures.</p><p><strong>How to measure cost and speed.</strong> Divide all attempt costs, including failures and fallbacks, by accepted tasks. Measure time to verified completion, and include review effort when assessing economics.</p><p><strong>How to choose and improve the system.</strong> After meeting the quality threshold, compare cost, time, consistency, and failure severity. Inspect misses, repeat runs, use held-out tasks after tuning, and evaluate the full routing policy.</p><p>Learn how to choose an open model for a coding agent by measuring whether the complete system finishes representative work reliably, quickly, and economically. The central decision is <strong>which system fits which workload</strong>, rather than which model tops a leaderboard.</p><p>Based on Baseten’s <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM">47 minute webinar</a>, hosted by Alex Ker with Molly Elfers. Read the core explanation and worked examples in about 12 minutes; the three understanding checks are optional. Mathematical models, worked numbers, and the visual simulations are teaching additions, not measured results from the webinar.</p></section><section id="what-you-are-actually-evaluating"><h2>What you are actually evaluating</h2><p>A <strong>model</strong> generates reasoning, text, and tool requests. A <strong>harness</strong> runs the agent loop: supplies instructions, exposes tools, returns results, manages context, applies edits, and decides when to stop. A <strong>provider</strong> serves the model and handles requests, output formats, caching, and reliability.</p><p>A coding agent succeeds only when these parts work together. A sensible patch that never applies is a system failure. A correct tool request that the server misparses is also a system failure, even though the remedy differs.</p><p>The webinar introduces task level optimization at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=542s">9:02</a> and harness behavior at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1260s">21:00</a>.</p><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 590" role="img" aria-label="Coding agent loop with tool feedback and independent acceptance checks"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#b1bfd0"/></marker></defs><rect class="node" x="140.0" y="15" width="300" height="54" rx="8"/><text x="290" y="47.0" text-anchor="middle" class=""><tspan x="290" dy="0">Task and starting repository</tspan></text><rect class="node" x="160.0" y="105" width="260" height="54" rx="8"/><text x="290" y="137.0" text-anchor="middle" class=""><tspan x="290" dy="0">Harness and context</tspan></text><rect class="node" x="140.0" y="195" width="300" height="65" rx="8"/><text x="290" y="222.5" text-anchor="middle" class=""><tspan x="290" dy="0">Model through</tspan><tspan x="290" dy="21">serving provider</tspan></text><rect class="node" x="160.0" y="300" width="260" height="65" rx="8"/><text x="290" y="327.5" text-anchor="middle" class=""><tspan x="290" dy="0">Tool request</tspan><tspan x="290" dy="21">or final answer</tspan></text><rect class="node" x="140.0" y="440" width="300" height="65" rx="8"/><text x="290" y="467.5" text-anchor="middle" class=""><tspan x="290" dy="0">Independent</tspan><tspan x="290" dy="21">acceptance checks</tspan></text><rect class="node" x="447.5" y="300" width="175" height="86" rx="8"/><text x="535" y="328.0" text-anchor="middle" class=""><tspan x="535" dy="0">Edit execute</tspan><tspan x="535" dy="21">and return</tspan><tspan x="535" dy="21">evidence</tspan></text><path class="edge" d="M290 69 V105" marker-end="url(#arrow)"/><path class="edge" d="M290 159 V195" marker-end="url(#arrow)"/><path class="edge" d="M290 260 V300" marker-end="url(#arrow)"/><path class="edge" d="M290 365 V440" marker-end="url(#arrow)"/><text x="360" y="409" text-anchor="middle" class="edge-label"><tspan x="360" dy="0">Final answer</tspan></text><path class="edge" d="M420 332 H447" marker-end="url(#arrow)"/><text x="514" y="285" text-anchor="middle" class="edge-label"><tspan x="514" dy="0">Tool request</tspan></text><path class="edge" d="M535 300 V132 H420" marker-end="url(#arrow)"/></svg></div><details><summary>Diagram source</summary><pre><code>flowchart TD
+  T[&quot;Task and starting repository&quot;] --&gt; H[&quot;Harness and context&quot;]
+  H --&gt; M[&quot;Model through serving provider&quot;]
+  M --&gt; C{&quot;Tool request or final answer&quot;}
+  C --&gt;|Tool request| E[&quot;Edit execute and return evidence&quot;]
+  E --&gt; H
+  C --&gt;|Final answer| V[&quot;Independent acceptance checks&quot;]</code></pre></details><p><strong>Teaching model:</strong> measured quality depends on a configuration, not just a model name.</p><div class="equation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo>=</mo><mi>Q</mi><mo>(</mo><mi>M</mi><mo>,</mo><mi>H</mi><mo>,</mo><mi>P</mi><mo>,</mo><mi>D</mi><mo>,</mo><mi>B</mi><mo>,</mo><mi>G</mi><mo>)</mo></mrow></math></div><details><summary>Equation source</summary><pre><code>Q = Q(M,H,P,D,B,G)</code></pre></details><p>Here M is the model, H the harness, P the serving configuration, D the task distribution, B the resource budget, and G the grader. Change one of these and you have changed the experiment. “Model A scored 80 percent” is incomplete without this context.</p></section><section id="start-with-the-work-and-the-acceptance-rule"><h2>Start with the work and the acceptance rule</h2><p>The webinar’s pilot keeps an existing harness and uses historical work from the team’s repositories: <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1419s">23:39 to 28:23</a>. Its chapter outline proposes <strong>30–50 canonical PRs</strong>, meaning representative examples of recurring work. This is a starting pilot size, not a statistical guarantee.</p><p><strong>Worked example for a solo builder:</strong> suppose your agent repeatedly fixes data ingestion bugs. Give each candidate the same broken starting repository and issue description. Ask it to repair the behavior and verify the fix. The acceptance rule is determined before looking at any candidate’s output.</p><div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Work you need</th>
+<th>Evidence that would support success</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repair a CSV import bug</td>
+<td>The failing input now imports correctly and existing import behavior still works</td>
+</tr>
+<tr>
+<td>Add a settings screen</td>
+<td>Required controls work, persistence behaves correctly, and existing navigation still works</td>
+</tr>
+<tr>
+<td>Review a pull request</td>
+<td>Findings identify real defects with evidence; false alarms are recorded</td>
+</tr>
+<tr>
+<td>Answer a repository question</td>
+<td>The explanation points to the relevant code and accurately describes its behavior</td>
+</tr>
+</tbody>
+</table></div><p>These are teaching examples. Each needs its own grader; a test of isolated function generation cannot establish how well an agent navigates and repairs a real repository.</p><p>A <strong>target check</strong> asks whether the requested behavior works. A <strong>regression check</strong> asks whether previously working behavior still works. For the CSV fix, include existing tests for quoted commas, blank fields, and supported encodings. Running these checks after the patch catches a “fix” that repairs one input by breaking another.</p><h3>A small evaluation contract</h3><pre><code class="language-yaml"># Teaching template; choose values for your own workflow.
+workload: repository bug fixes
+baseline: your current model and harness
+challengers: one or two supported open models
+environment: pinned starting commit and dependency image
+agent_tools: [read_files, search, edit, run_tests]
+network: explicitly defined before the run
+limits: fixed time, token, and attempt budgets
+acceptance: target tests plus regression checks and patch review
+logging: served model, tool calls, tokens, cost, elapsed time
+comparison: same task set and declared retry policy
+</code></pre><p>Baseten’s <a href="https://www.baseten.co/articles/how-to-evaluate-open-source-models-for-coding-use-cases/">written guide</a> adds important controls: validate that the original fix passes your grader, keep solutions and held out evaluation tests inaccessible to the agent, log the model actually served, and report tuned configurations separately. Use supported templates and tool interfaces rather than forcing every model through an incompatible format.</p><p><strong>Why this matters:</strong> if the grader rejects the known correct solution, or the agent can read the solution commit, the experiment cannot answer your question.</p></section><section id="compare-useful-outcomes-rather-than-token-prices"><h2>Compare useful outcomes rather than token prices</h2><p>The webinar calls out cost and wall clock per successful task at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1741s">29:01</a>. The key denominator is an accepted outcome.</p><p><strong>Illustrative example with 100 distinct tasks and one attempt each:</strong></p><div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Measure</th>
+<th style="text-align: right;">Candidate A</th>
+<th style="text-align: right;">Candidate B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cost per attempt</td>
+<td style="text-align: right;">$0.10</td>
+<td style="text-align: right;">$0.30</td>
+</tr>
+<tr>
+<td>Accepted tasks</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">90</td>
+</tr>
+<tr>
+<td>Total inference cost</td>
+<td style="text-align: right;">$10</td>
+<td style="text-align: right;">$30</td>
+</tr>
+<tr>
+<td>Cost divided by accepted tasks</td>
+<td style="text-align: right;">$0.40</td>
+<td style="text-align: right;">$0.33</td>
+</tr>
+</tbody>
+</table></div><p>B costs three times as much per attempt but costs less per accepted task. It also completes far more of the workload. A lower cost per success alone is insufficient if a candidate fails your quality requirement.</p><div class="equation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>p</mi><mo>^</mo></mover><mo>=</mo><mfrac><mtext>accepted tasks</mtext><mtext>attempted tasks</mtext></mfrac><mo>,</mo><mspace width="1em"/><msub><mi>C</mi><mtext>resolved</mtext></msub><mo>=</mo><mfrac><mtext>cost of all attempts</mtext><mtext>distinct tasks resolved</mtext></mfrac></mrow></math></div><details><summary>Equation source</summary><pre><code>\widehat{p}=\frac{\text{accepted tasks}}{\text{attempted tasks}},\qquad
+C_{\mathrm{resolved}}=\frac{\text{cost of all attempts}}{\text{distinct tasks resolved}}</code></pre></details><p>Count failed attempts in the numerator. If your policy allows retries, count an eventually resolved task once and include every attempt’s cost. With no resolved tasks the ratio is undefined; it is never zero.</p><p>The visual below lets you change A’s success count while its token bill stays fixed. All numbers are hypothetical.</p><div class="viz-export"><div id="cost-demo">
+  <div class="viz-controls">
+    <label class="form-label" for="a-success">A accepted tasks out of 100: <output id="a-count" class="tabular-nums">25</output>
+      <input id="a-success" class="form-range" type="range" min="0" max="100" step="1" value="25">
+    </label>
+  </div>
+  <div class="viz-grid">
+    <div class="card viz-stat"><div>A · $10 total spend</div><div class="viz-stat-value tabular-nums" id="a-cost">$0.40</div><div>per accepted task</div></div>
+    <div class="card viz-stat"><div>B · $30 total spend</div><div class="viz-stat-value tabular-nums">$0.33</div><div>per accepted task · 90 accepted</div></div>
+  </div>
+  <div style="margin-top:20px">
+    <div class="viz-row"><span>A task outcomes</span><span id="a-outcomes" class="tabular-nums">25 accepted · 75 failed</span></div>
+    <div id="a-bar" role="img" aria-label="25 accepted and 75 failed tasks" style="display:flex;height:24px;background:var(--muted);margin:8px 0 18px"><div id="a-pass" style="width:25%;background:var(--viz-series-1)"></div></div>
+    <div class="viz-row"><span>B task outcomes</span><span class="tabular-nums">90 accepted · 10 failed</span></div>
+    <div role="img" aria-label="90 accepted and 10 failed tasks" style="display:flex;height:24px;background:var(--muted);margin:8px 0"><div style="width:90%;background:var(--viz-series-1)"></div></div>
+    <div class="text-small text-muted">Filled = accepted · remainder = failed · hypothetical data</div>
+  </div>
+  <div id="cost-result" aria-live="polite" style="margin-top:16px">B costs less per accepted task and accepts more tasks.</div>
+</div>
+<style>
+#cost-demo #a-pass{transition:width .3s ease}
+@media(prefers-reduced-motion:reduce){#cost-demo #a-pass{transition:none}}
+</style>
+<script>
+(()=>{
+ const root=document.getElementById('cost-demo');
+ const input=root.querySelector('#a-success');
+ function update(){
+   const n=Number(input.value),value=n===0?'Undefined':'$'+(10/n).toFixed(2);
+   root.querySelector('#a-count').textContent=n;
+   root.querySelector('#a-cost').textContent=value;
+   root.querySelector('#a-outcomes').textContent=n+' accepted · '+(100-n)+' failed';
+   root.querySelector('#a-pass').style.width=n+'%';
+   root.querySelector('#a-bar').setAttribute('aria-label',n+' accepted and '+(100-n)+' failed tasks');
+   root.querySelector('#cost-result').textContent=n===0?'No accepted tasks: cost per accepted task is undefined.':n<30?'B costs less per accepted task and accepts more tasks.':n===30?'Both cost $0.33 per accepted task; B accepts 90 tasks versus A’s 30.':n<90?'A costs less per accepted task; B accepts more tasks.':n===90?'Both accept 90 tasks; A costs less per accepted task.':'A costs less per accepted task and accepts more tasks.';
+ }
+ input.addEventListener('input',update);
+})();
+</script></div></section><section id="see-why-fast-tokens-can-still-mean-a-slow-agent"><h2>See why fast tokens can still mean a slow agent</h2><p>The webinar distinguishes TTFT, latency, throughput, and cache behavior at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=648s">10:48</a>.</p><p><strong>TTFT</strong>, or time to first token, measures how soon a response begins. <strong>Output throughput</strong> measures tokens generated per second. <strong>Task completion latency</strong> measures when a verified result becomes usable. An agent can start quickly and generate rapidly while spending many turns searching irrelevant files or retrying edits.</p><p>The animation below uses invented timing to separate these quantities. Advance through the same sequence of work for two systems.</p><div class="viz-export"><div id="latency-demo">
+  <div class="viz-controls">
+    <button class="btn btn-primary" id="next-stage" type="button">Advance stage</button>
+    <button class="btn" id="reset-stage" type="button">Reset</button>
+    <span id="stage-label" aria-live="polite">Ready · 0 of 4 stages complete</span>
+  </div>
+  <div id="time-plot" style="width:100%;margin-top:16px"></div>
+  <div class="viz-row text-small" style="gap:16px;margin-top:12px">
+    <span><span style="color:var(--viz-series-1)">■</span> Find code</span>
+    <span><span style="color:var(--viz-series-2)">■</span> Generate patch</span>
+    <span><span style="color:var(--viz-series-3)">■</span> Edit and recover</span>
+    <span><span style="color:var(--viz-series-4)">■</span> Verify</span>
+  </div>
+  <div id="time-detail" aria-live="polite" style="margin-top:14px">A generates at 100 tokens/s; B at 33 tokens/s. Advance to reveal task time.</div>
+  <div class="text-small text-muted" style="margin-top:8px">Hypothetical sequential timings · both generate 500 tokens · one shared time axis</div>
+</div>
+<style>
+#latency-demo .time-mark{transition:width .6s ease}
+#latency-demo .time-svg text{fill:var(--foreground);font:inherit}
+@media(prefers-reduced-motion:reduce){#latency-demo .time-mark{transition:none}}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('latency-demo'),host=root.querySelector('#time-plot');
+const candidates=[{name:'A · faster tokens',durations:[15,5,70,20]},{name:'B · slower tokens',durations:[15,15,10,20]}];
+const phases=['Find code','Generate patch','Edit and recover','Verify'];
+let step=0;
+function totals(){return candidates.map(c=>c.durations.slice(0,step).reduce((a,b)=>a+b,0));}
+function draw(animate=false){
+ const w=Math.max(240,host.clientWidth),left=4,right=30,plot=w-left-right,ns='http://www.w3.org/2000/svg';
+ const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 '+w+' 255');svg.setAttribute('width','100%');svg.setAttribute('role','img');svg.setAttribute('class','time-svg');svg.setAttribute('aria-label','Coding task elapsed time comparison. A completes in 110 seconds, B in 60 seconds. Stage '+step+' of 4.');
+ function add(tag,attrs,parent=svg){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));parent.appendChild(e);return e;}
+ function label(x,y,s){const e=add('text',{x,y});e.textContent=s;return e;}
+ [0,30,60,90,120].forEach(t=>{const x=left+t/120*plot;add('line',{x1:x,y1:40,x2:x,y2:190,stroke:'var(--border)'});label(x,215,t);});
+ label(left,246,'Elapsed time (seconds)');
+ const values=totals();
+ candidates.forEach((c,i)=>{
+  const y=20+i*90;label(left,y,c.name+' · '+values[i]+' s');
+  let start=0;
+  c.durations.forEach((duration,j)=>{
+    const x=left+start/120*plot,width=duration/120*plot;
+    add('rect',{x,y:y+14,width:Math.max(0,width-1),height:28,fill:'var(--viz-series-'+(j+1)+')',opacity:.14});
+    const mark=add('rect',{x,y:y+14,width:j<step?Math.max(0,width-1):0,height:28,fill:'var(--viz-series-'+(j+1)+')',class:'time-mark'});
+    if(animate && j===step-1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){mark.animate([{width:'0px'},{width:Math.max(0,width-1)+'px'}],{duration:650,easing:'ease-out'});}
+    const title=add('title',{},mark);title.textContent=c.name+': '+phases[j]+' '+duration+' seconds';
+    start+=duration;
+  });
+ });
+ host.replaceChildren(svg);
+}
+function update(){
+ const vals=totals();draw(true);
+ root.querySelector('#stage-label').textContent=step===0?'Ready · 0 of 4 stages complete':phases[step-1]+' complete · '+step+' of 4';
+ root.querySelector('#next-stage').disabled=step===4;
+ root.querySelector('#time-detail').textContent=step===0?'A generates at 100 tokens/s; B at 33 tokens/s. Advance to reveal task time.':step===4?'Verified result: A takes 110 s; B takes 60 s. Faster generation did not produce faster completion.':'Cumulative elapsed time: A '+vals[0]+' s · B '+vals[1]+' s.';
+}
+root.querySelector('#next-stage').addEventListener('click',()=>{if(step<4){step++;update();}});
+root.querySelector('#reset-stage').addEventListener('click',()=>{step=0;update();});
+new ResizeObserver(()=>draw(false)).observe(host);draw(false);
+})();
+</script></div><p><strong>Teaching approximation for a sequential agent loop:</strong></p><div class="equation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>T</mi><mtext>task</mtext></msub><mo>≈</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mo>(</mo><msub><mi>T</mi><mrow><mtext>queue</mtext><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>T</mi><mrow><mtext>prefill</mtext><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><mfrac><msub><mi>N</mi><mrow><mtext>out</mtext><mo>,</mo><mi>j</mi></mrow></msub><msub><mi>r</mi><mi>j</mi></msub></mfrac><mo>+</mo><msub><mi>T</mi><mrow><mtext>tool</mtext><mo>,</mo><mi>j</mi></mrow></msub><mo>)</mo><mo>+</mo><msub><mi>T</mi><mtext>verification</mtext></msub></mrow></math></div><details><summary>Equation source</summary><pre><code>T_{\mathrm{task}}\approx\sum_{j=1}^{k}\left(T_{\mathrm{queue},j}+T_{\mathrm{prefill},j}+\frac{N_{\mathrm{out},j}}{r_j}+T_{\mathrm{tool},j}\right)+T_{\mathrm{verification}}</code></pre></details><p>Here k is the number of model turns, r is output tokens per second, and tool time includes activities such as repository search and test execution. Faster generation reduces only one term; fewer unnecessary turns can reduce several.</p><p>For interactive work, inspect completion latency and its slow tail. For parallel batch work, also measure accepted tasks per hour at a stated concurrency. Summed attempt durations divided by successes is amortized elapsed effort; it is different from a user’s wait for an individual task.</p><p><strong>Cache hits</strong> can lower repeated context processing cost or latency under a provider’s cache rules. Compare the actual workload bill and completion times. A high cache hit rate does not establish that more tasks were solved.</p></section><section id="separate-a-controlled-comparison-from-a-tuned-system"><h2>Separate a controlled comparison from a tuned system</h2><p>The webinar’s initial pilot is “keep the harness, swap the model” at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1462s">24:22</a>. This makes the first question interpretable: does changing the model improve your existing workflow?</p><p>A second experiment can ask whether changing the harness, prompt, or context strategy improves a particular model. Both questions are useful. They need separate labels.</p><div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Keep comparable</th>
+<th>What the result means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial model comparison</td>
+<td>Tasks, environment, tools, budgets, grader, retry policy</td>
+<td>Fit within the chosen workflow</td>
+</tr>
+<tr>
+<td>Model specific tuning</td>
+<td>Final acceptance criteria and evaluation tasks</td>
+<td>Quality of the optimized system</td>
+</tr>
+<tr>
+<td>Provider comparison</td>
+<td>Model version and supported request settings</td>
+<td>Serving effects under measured conditions</td>
+</tr>
+<tr>
+<td>Routing comparison</td>
+<td>Workload and end to end acceptance rules</td>
+<td>Quality and economics of the complete routing policy</td>
+</tr>
+</tbody>
+</table></div><p><strong>Failure diagnosis example:</strong> the agent attempts a valid file edit but the parser rejects the tool call. Check formatting and the tool round trip before concluding the model cannot code. Keep that failure in the system result; explain its cause rather than silently discarding it.</p><p>An LLM judge appears in the webinar at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1703s">28:23</a>. <strong>Teaching guidance:</strong> use a judge for rubric based assessment where it helps, such as explanation quality or review usefulness. For executable behavior, retain test and execution evidence. Calibrate subjective judgments against human reviewed examples; another model’s approval is not independent proof of correctness.</p></section><section id="read-small-score-differences-carefully"><h2>Read small score differences carefully</h2><p><strong>Statistical teaching addition:</strong> on 30 tasks, a single changed result shifts the success rate by 3.33 percentage points. Comparing 25/30 with 26/30 does not justify a confident universal ranking.</p><p>For an illustrative binomial model, 25/30 gives an approximate 95 percent Wilson interval of <strong>66.4 to 92.7 percent</strong>. That interval assumes independent tasks from a relevant population; correlated or selectively chosen tasks weaken the interpretation. It describes uncertainty about this sampling model, not all possible coding work.</p><p>Inspect paired outcomes: which tasks does A solve that B misses, and vice versa? Repeat runs to study variability on fixed tasks. Add representative tasks to improve workload coverage. These resolve different uncertainties.</p><p>If you optimize prompts against the pilot, use fresh held out tasks for the final decision. Otherwise you may have improved your benchmark fit more than your agent.</p></section><section id="shortlist-with-the-frontier-then-choose-by-workload"><h2>Shortlist with the frontier then choose by workload</h2><p>At <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1034s">17:14</a>, the webinar uses Artificial Analysis for shortlisting; at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1141s">19:01</a>, it introduces the Pareto frontier.</p><p><strong>Teaching example:</strong> A costs $0.20 per accepted task at 75 percent success. B costs $0.30 at 90 percent. C costs $0.40 at 80 percent. Considering only these two metrics, B dominates C: it is cheaper and more successful. A and B remain tradeoffs. A quality floor of 85 percent excludes A.</p><p>A public frontier helps you select candidates to investigate. Your own task distribution, latency requirements, and failure severity determine the eventual choice.</p><p>The webinar’s “fleet engineering” discussion at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1981s">33:01 to 35:12</a> proposes matching workloads to models, including a mix of open and closed systems. The following routing diagram is a teaching reconstruction, not a prescribed vendor configuration.</p><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 770" role="img" aria-label="Task routing with acceptance checks, a bounded fallback loop, and an unresolved outcome"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#b1bfd0"/></marker></defs><rect class="node" x="185.0" y="15" width="280" height="54" rx="8"/><text x="325" y="47.0" text-anchor="middle" class=""><tspan x="325" dy="0">Incoming coding task</tspan></text><rect class="node" x="185.0" y="105" width="280" height="54" rx="8"/><text x="325" y="137.0" text-anchor="middle" class=""><tspan x="325" dy="0">Measured workload class</tspan></text><rect class="node" x="30.0" y="240" width="270" height="65" rx="8"/><text x="165" y="267.5" text-anchor="middle" class=""><tspan x="165" dy="0">Qualified open</tspan><tspan x="165" dy="21">model system</tspan></text><rect class="node" x="355.0" y="240" width="270" height="65" rx="8"/><text x="490" y="267.5" text-anchor="middle" class=""><tspan x="490" dy="0">More capable</tspan><tspan x="490" dy="21">fallback system</tspan></text><rect class="node" x="195.0" y="380" width="260" height="65" rx="8"/><text x="325" y="407.5" text-anchor="middle" class=""><tspan x="325" dy="0">Acceptance</tspan><tspan x="325" dy="21">checks pass</tspan></text><rect class="node" x="35.0" y="530" width="260" height="54" rx="8"/><text x="165" y="562.0" text-anchor="middle" class=""><tspan x="165" dy="0">Accepted result</tspan></text><rect class="node" x="355.0" y="530" width="270" height="54" rx="8"/><text x="490" y="562.0" text-anchor="middle" class=""><tspan x="490" dy="0">Retry budget remains</tspan></text><rect class="node" x="355.0" y="665" width="270" height="65" rx="8"/><text x="490" y="692.5" text-anchor="middle" class=""><tspan x="490" dy="0">Unresolved</tspan><tspan x="490" dy="21">and recorded</tspan></text><path class="edge" d="M325 69 V105" marker-end="url(#arrow)"/><path class="edge" d="M255 159 V195 H165 V240" marker-end="url(#arrow)"/><text x="159" y="184" text-anchor="middle" class="edge-label"><tspan x="159" dy="0">Routine and</tspan><tspan x="159" dy="21">validated</tspan></text><path class="edge" d="M395 159 V195 H490 V240" marker-end="url(#arrow)"/><text x="490" y="184" text-anchor="middle" class="edge-label"><tspan x="490" dy="0">Difficult or</tspan><tspan x="490" dy="21">poorly covered</tspan></text><path class="edge" d="M165 305 V345 H260 V380" marker-end="url(#arrow)"/><path class="edge" d="M490 305 V345 H390 V380" marker-end="url(#arrow)"/><path class="edge" d="M260 445 V485 H165 V530" marker-end="url(#arrow)"/><text x="176" y="477" text-anchor="middle" class="edge-label"><tspan x="176" dy="0">Yes</tspan></text><path class="edge" d="M390 445 V485 H490 V530" marker-end="url(#arrow)"/><text x="488" y="477" text-anchor="middle" class="edge-label"><tspan x="488" dy="0">No</tspan></text><path class="edge" d="M490 584 V665" marker-end="url(#arrow)"/><text x="516" y="628" text-anchor="middle" class="edge-label"><tspan x="516" dy="0">No</tspan></text><path class="edge" d="M625 557 H640 V272 H625" marker-end="url(#arrow)"/><text x="607" y="420" text-anchor="middle" class="edge-label"><tspan x="607" dy="0">Yes</tspan></text></svg></div><details><summary>Diagram source</summary><pre><code>flowchart TD
+  W[&quot;Incoming coding task&quot;] --&gt; R{&quot;Measured workload class&quot;}
+  R --&gt;|Routine and validated| O[&quot;Qualified open model system&quot;]
+  R --&gt;|Difficult or poorly covered| F[&quot;More capable fallback system&quot;]
+  O --&gt; V{&quot;Acceptance checks pass&quot;}
+  F --&gt; V
+  V --&gt;|Yes| A[&quot;Accepted result&quot;]
+  V --&gt;|No| E{&quot;Retry budget remains&quot;}
+  E --&gt;|Yes| F
+  E --&gt;|No| U[&quot;Unresolved and recorded&quot;]</code></pre></details><p><strong>The subtlety:</strong> a router is another system to evaluate. Include misclassification, fallback attempts, verification, and human intervention in its totals. A cheap first attempt followed by an expensive fallback can cost more than starting with the fallback.</p><p>The webinar also discusses Jevons paradox at <a href="https://www.youtube.com/watch?v=2ytlRcUzgpM&amp;t=1298s">21:38</a>. <strong>Teaching arithmetic:</strong> total spend equals usage multiplied by unit cost. If unit cost halves but usage triples, spend rises 50 percent. Separate efficiency gains from your decision to run more work.</p></section><section id="a-decision-card-you-can-reuse"><h2>A decision card you can reuse</h2><p>You do not need to run an evaluation to use this card. It also helps you interrogate someone else’s model claim.</p><pre><code class="language-text">WORKLOAD: Which recurring tasks and repositories does this cover?
+SYSTEM: Exact model, provider, harness version, tools, and limits?
+QUALITY: Accepted count / task count; regressions and critical failures?
+CONSISTENCY: Which results change across repeated runs?
+COST: All attempts and fallbacks / distinct accepted tasks?
+TIME: Time to accepted completion; slow tail; declared concurrency?
+DECISION: Meets the quality floor and improves a relevant constraint?
+EVIDENCE: Reproducible configuration, patches, traces, and grader?
+</code></pre><p><strong>For your solo AI projects:</strong> engineer review time can outweigh token savings. As a teaching extension, add inference, compute, and review costs before dividing by accepted tasks. An agent that saves $1 in tokens but creates ten extra minutes of debugging may be a poor economic choice.</p></section><section id="three-quick-understanding-checks"><h2>Three quick understanding checks</h2><ol>
+<li><strong>An open model has half the token price. Should you switch?</strong> Only after checking task success, total token use, retries, latency, and review effort under your workflow.</li>
+</ol><ol start="2">
+<li><strong>A patch passes the new bug test but breaks an existing import test. Is it resolved?</strong> No. The target behavior improved, but the regression gate failed.</li>
+</ol><ol start="3">
+<li><strong>An optimized challenger beats your baseline after changing both model and harness. What have you learned?</strong> The new system performed better under the measured protocol. You have not isolated the model’s contribution.</li>
+</ol></section><section id="what-to-explore-next"><h2>What to explore next</h2><p>The highest value follow up is <strong>failure attribution</strong>: when a coding agent fails, was the cause its reasoning, missing context, tool execution, serving behavior, budget, or grader? This turns evaluation into a method for deciding what to improve.</p><p>A second useful question is whether a simple workload rule can match a complicated model router. Evaluate the extra routing complexity against accepted outcomes, including the cost of fallback.</p></section><section id="sources-and-coverage"><h2>Sources and coverage</h2><ul>
+<li><a href="https://www.youtube.com/watch?v=2ytlRcUzgpM">Baseten video</a>, published October 28, 2026. The description and full published chapter outline establish the tutorial’s sequence and timestamp links.</li>
+</ul><ul>
+<li><a href="https://www.baseten.co/resources/webinar/how-to-evaluate-open-models-for-your-coding-agents/">Official webinar page</a>, identifying Alex Ker and Molly Elfers and the pilot framework.</li>
+</ul><ul>
+<li><a href="https://www.baseten.co/articles/how-to-evaluate-open-source-models-for-coding-use-cases/">Amit Gambhir’s companion guide</a>, October 16, 2026, for the explicitly attributed experimental controls.</li>
+</ul><p><strong>Coverage limit:</strong> the complete spoken transcript was not accessible. This tutorial follows the verified chapter framework and companion guidance; it does not claim to reproduce every spoken example or Q&amp;A answer. No new coding benchmark was run. All hypothetical numbers, equations, diagrams, and animations are teaching additions.</p></section></main><footer><p class="meta">Exported from the <a href="https://chatgpt.com/space/page_a197cabf815081919512f01b2cfb1e23">current tutorial Page</a>. The text and interactive examples are included in this file; source links require internet access.</p><a href="#top">Back to top</a></footer></body></html>
